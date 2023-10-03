@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const escapeHtml = require("escape-html");
 const app = express();
 const { v4: uuidv4 } = require('uuid');
+const morgan = require('morgan');
+
 app.use(bodyParser.urlencoded({ extended: true }));
 // helmet
 // app.use(helmet());
@@ -16,14 +18,20 @@ const allowAllOptions = {
   origin: "*",
 }
 app.use(express.json());
-app.use(cors(allowAllOptions));
 const ClientXoptions = {
   origin: 'http://localhost:7000',
+  methods: 'GET',
 }
 const ClientYoptions = {
   origin: 'http://localhost:8000',
+  methods: ['GET', 'POST'],
 
 }
+
+
+
+
+
 const requestIdMiddleware = (req, res, next) => {
   if (req.headers['x-request-id']) {
     res.setHeader("x-request-id", req.headers['x-request-id'])
@@ -36,7 +44,7 @@ const requestIdMiddleware = (req, res, next) => {
   next()
 }
 
-const logggerMiddleware = (req,res, next) => {
+const logggerMiddleware = (req, res, next) => {
   console.log(req.request_id)
   next()
 }
@@ -85,12 +93,34 @@ app.get('/sample-header', (req, res) => {
     res.send('Hello World!');
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// app.use(cors(allowAllOptions));
+// app.use(morgan('combined'));
+
 app.get('/cors', (req, res) => {
   res.json({ message: 'This is a CORS-enabled route global' });
 });
 
 app.get('/client-x', cors(ClientXoptions), (req, res) => {
+  // LOGIC BUSINESS
   res.json({ message: 'This is a CORS-enabled X-client route' });
+});
+app.options('/client-x', cors(), (req, res) => {
+
 });
 app.post('/client-x', cors(ClientXoptions), (req, res) => {
   let body = req.body;

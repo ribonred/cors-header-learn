@@ -9,8 +9,8 @@ const morgan = require('morgan');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 // helmet
-// app.use(helmet());
-// app.use(helmet.frameguard({ action: 'deny' }))
+app.use(helmet());
+app.use(helmet.frameguard({ action: 'deny' }))
 const GlobalcorsOptions = {
   origin: ['http://localhost:7000', 'http://localhost:8000', 'http://localhost:5555'],
 }
@@ -27,7 +27,6 @@ const ClientYoptions = {
   methods: ['GET', 'POST'],
 
 }
-
 
 
 
@@ -49,7 +48,8 @@ const logggerMiddleware = (req, res, next) => {
   next()
 }
 app.get('/sensitive-data', (req, res) => {
-  res.send('I AM SO SENSETIVE');
+  let query = "SELECT * FROM users WHERE username = " + req.query.username;
+  res.send(query);
 });
 
 app.get('/click-jacking', (req, res) => {
@@ -78,7 +78,6 @@ app.get('/request', requestIdMiddleware, (req, res) => {
 });
 app.get("/xss", (req, res) => {
   const name = req.query.name;
-  // const name = escapeHtml(req.query.name);
   res.send(`<h1>Hello, ${name}</h1>`);
 });
 
@@ -104,11 +103,6 @@ app.get('/sample-header', (req, res) => {
 
 
 
-
-
-
-
-// app.use(cors(allowAllOptions));
 // app.use(morgan('combined'));
 
 app.get('/cors', (req, res) => {
